@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Rimage — Remake your images. 100% in your browser, runs locally, works offline. Crop, compress, and download." />
     <title>Rimage — Remake Your Images</title>
+    <script>
+      (function () {
+        var t = localStorage.getItem('rimage-theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

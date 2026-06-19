@@ -527,13 +527,7 @@ export function CropEditor({
                 style={cropStyle}
                 onPointerDown={(e) => startDrag('move', e)}
               >
-                {cropShape === 'rect' && (
-                  <>
-                    <div className="crop-grid" />
-                    <div className="crop-crosshair-h" />
-                    <div className="crop-crosshair-v" />
-                  </>
-                )}
+                {cropShape === 'rect' && <div className="crop-grid" aria-hidden />}
                 {cropShape === 'circle' && <div className="crop-circle-ring" />}
                 {handles.map(({ id, className }) => (
                   <div
@@ -547,7 +541,7 @@ export function CropEditor({
             </div>
           </div>
         ) : (
-          <DropZone onImage={onImage} />
+          <DropZone onImage={onImage} onBrowse={onUpload} />
         )}
       </div>
     </div>
