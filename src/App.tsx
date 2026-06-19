@@ -226,7 +226,10 @@ function App() {
             Local & offline
           </span>
           <details className="header-help">
-            <summary className="header-help-trigger">How it works</summary>
+            <summary className="header-help-trigger">
+              <span className="header-help-label-full">How it works</span>
+              <span className="header-help-label-short">Help</span>
+            </summary>
             <div className="header-help-panel">
               <p className="header-help-lead">
                 Everything runs in your browser. Images stay on your device — nothing is uploaded.
@@ -251,11 +254,12 @@ function App() {
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
           <a
-            className="header-link"
+            className="header-link header-link-github"
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
             title="View source on GitHub"
+            aria-label="View source on GitHub"
           >
             GitHub
           </a>

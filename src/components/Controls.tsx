@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import type { OutputFormat, Priority } from '../lib/imageProcess';
 import { formatBytes } from '../lib/imageProcess';
 import { useCompileFlash } from '../hooks/useCompileFlash';
@@ -146,6 +146,18 @@ export function Controls({
 
   const cropLabel =
     cropWidth > 0 && cropHeight > 0 ? `${cropWidth} × ${cropHeight}` : '—';
+
+  const hasNotices =
+    (hasOutput && pixelsLocked) ||
+    (hasOutput && pixelsReduced && requestedWidth && requestedHeight) ||
+    (hasOutput && overTargetSize && pixelsLocked);
+
+  const resultBrief = useMemo(() => {
+    if (processing) return 'Compiling…';
+    if (!hasOutput) return '—';
+    const size = resultBytes != null ? formatBytes(resultBytes) : '—';
+    return `${resultWidth} × ${resultHeight} · ${size}`;
+  }, [processing, hasOutput, resultWidth, resultHeight, resultBytes]);
 
   return (
     <aside className="controls">
@@ -305,7 +317,7 @@ export function Controls({
           </div>
         )}
 
-        <div
+        <details
           className={[
             'output-summary',
             processing ? 'output-summary-processing' : '',
@@ -313,73 +325,88 @@ export function Controls({
             compileFlash ? 'output-summary-flash' : '',
           ].filter(Boolean).join(' ')}
         >
-          <div className="output-summary-row">
-            <span className="output-summary-label">Pixels</span>
-            <span className="output-pixels output-pixels-compact">
+          <summary className="output-summary-trigger">
+            <span className="output-summary-trigger-label">Result</span>
+            <span className="output-summary-brief">
+              {processing ? (
+                <span className="stat-loading" aria-live="polite">
+                  <span className="stat-spinner" aria-hidden />
+                  <span className="stat-loading-text">Compiling</span>
+                </span>
+              ) : (
+                resultBrief
+              )}
+            </span>
+            {hasNotices && <span className="output-summary-notice-dot" title="Has notices" />}
+          </summary>
+
+          <div className="output-summary-body">
+            <div className="output-summary-row">
+              <span className="output-summary-label">Pixels</span>
+              <span className="output-pixels output-pixels-compact">
+                <StatValue
+                  processing={processing}
+                  hasOutput={hasOutput}
+                  placeholder="… × …"
+                  compileKey={compileGeneration}
+                >
+                  {resultWidth} <span className="output-pixels-sep">×</span> {resultHeight}
+                </StatValue>
+              </span>
+            </div>
+            <div className="output-summary-row">
+              <span className="output-summary-label">File size</span>
+              <span className={hasOutput && resultBytes! <= targetBytes ? 'stat-good' : hasOutput ? 'stat-warn' : undefined}>
+                <StatValue processing={processing} hasOutput={hasOutput} compileKey={compileGeneration}>
+                  {resultBytes != null ? formatBytes(resultBytes) : '—'}
+                </StatValue>
+                {targetBytes > 0 && (
+                  <span className="stat-target"> / {formatBytes(targetBytes)}</span>
+                )}
+              </span>
+            </div>
+            <div className="output-summary-row">
+              <span className="output-summary-label">Quality</span>
               <StatValue
                 processing={processing}
-                hasOutput={hasOutput}
-                placeholder="… × …"
+                hasOutput={hasOutput && resultQuality != null}
                 compileKey={compileGeneration}
               >
-                {resultWidth} <span className="output-pixels-sep">×</span> {resultHeight}
+                {resultQuality != null ? `${Math.round(resultQuality * 100)}%` : '—'}
               </StatValue>
-            </span>
-          </div>
-          <div className="output-summary-row">
-            <span className="output-summary-label">File size</span>
-            <span className={hasOutput && resultBytes! <= targetBytes ? 'stat-good' : hasOutput ? 'stat-warn' : undefined}>
-              <StatValue processing={processing} hasOutput={hasOutput} compileKey={compileGeneration}>
-                {resultBytes != null ? formatBytes(resultBytes) : '—'}
+            </div>
+            <div className="output-summary-row">
+              <span className="output-summary-label">Saved</span>
+              <StatValue
+                processing={processing}
+                hasOutput={hasOutput && savings != null}
+                compileKey={compileGeneration}
+              >
+                {savings != null ? (
+                  <span className={savings > 0 ? 'stat-good' : undefined}>{savings.toFixed(0)}%</span>
+                ) : (
+                  '—'
+                )}
               </StatValue>
-              {targetBytes > 0 && (
-                <span className="stat-target"> / {formatBytes(targetBytes)}</span>
-              )}
-            </span>
-          </div>
-          <div className="output-summary-row">
-            <span className="output-summary-label">Quality</span>
-            <StatValue
-              processing={processing}
-              hasOutput={hasOutput && resultQuality != null}
-              compileKey={compileGeneration}
-            >
-              {resultQuality != null ? `${Math.round(resultQuality * 100)}%` : '—'}
-            </StatValue>
-          </div>
-          <div className="output-summary-row">
-            <span className="output-summary-label">Saved</span>
-            <StatValue
-              processing={processing}
-              hasOutput={hasOutput && savings != null}
-              compileKey={compileGeneration}
-            >
-              {savings != null ? (
-                <span className={savings > 0 ? 'stat-good' : undefined}>{savings.toFixed(0)}%</span>
-              ) : (
-                '—'
-              )}
-            </StatValue>
-          </div>
-        </div>
+            </div>
 
-        {(hasOutput && pixelsLocked) ||
-        (hasOutput && pixelsReduced && requestedWidth && requestedHeight) ||
-        (hasOutput && overTargetSize && pixelsLocked) ? (
-          <div className="output-notices">
-            {hasOutput && pixelsLocked && (
-              <p className="output-notice output-notice-info">Pixels hard-forced</p>
-            )}
-            {hasOutput && pixelsReduced && requestedWidth && requestedHeight && (
-              <p className="output-notice output-notice-warn">
-                Pixels reduced from {requestedWidth} × {requestedHeight}
-              </p>
-            )}
-            {hasOutput && overTargetSize && pixelsLocked && (
-              <p className="output-notice output-notice-warn">File size over target</p>
+            {hasNotices && (
+              <div className="output-notices">
+                {hasOutput && pixelsLocked && (
+                  <p className="output-notice output-notice-info">Pixels hard-forced</p>
+                )}
+                {hasOutput && pixelsReduced && requestedWidth && requestedHeight && (
+                  <p className="output-notice output-notice-warn">
+                    Pixels reduced from {requestedWidth} × {requestedHeight}
+                  </p>
+                )}
+                {hasOutput && overTargetSize && pixelsLocked && (
+                  <p className="output-notice output-notice-warn">File size over target</p>
+                )}
+              </div>
             )}
           </div>
-        ) : null}
+        </details>
 
         <button
           type="button"

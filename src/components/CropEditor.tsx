@@ -427,38 +427,40 @@ export function CropEditor({
             <CircleIcon />
           </button>
         </div>
-        <div className="crop-info">
-          <span className={!hasImage ? 'crop-info-placeholder' : ''}>{cropSizeLabel}</span>
-          <span className="crop-hint">{cropHint}</span>
-        </div>
-        <div className="zoom-controls">
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm"
-            onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
-            disabled={!hasImage}
-          >
-            −
-          </button>
-          <span className={!hasImage ? 'crop-info-placeholder' : ''}>
-            {hasImage ? `${Math.round(zoom * 100)}%` : '—%'}
-          </span>
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm"
-            onClick={() => setZoom((z) => Math.min(4, z + 0.25))}
-            disabled={!hasImage}
-          >
-            +
-          </button>
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm"
-            onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
-            disabled={!hasImage}
-          >
-            Fit
-          </button>
+        <div className="crop-toolbar-status">
+          <div className="crop-info">
+            <span className={!hasImage ? 'crop-info-placeholder' : ''}>{cropSizeLabel}</span>
+            <span className="crop-hint">{cropHint}</span>
+          </div>
+          <div className="zoom-controls">
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
+              disabled={!hasImage}
+            >
+              −
+            </button>
+            <span className={!hasImage ? 'crop-info-placeholder' : ''}>
+              {hasImage ? `${Math.round(zoom * 100)}%` : '—%'}
+            </span>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => setZoom((z) => Math.min(4, z + 0.25))}
+              disabled={!hasImage}
+            >
+              +
+            </button>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}
+              disabled={!hasImage}
+            >
+              Fit
+            </button>
+          </div>
         </div>
       </div>
 
