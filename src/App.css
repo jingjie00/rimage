@@ -531,14 +531,19 @@ kbd {
   overflow: hidden;
 }
 
+.workspace-editor,
+.controls {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  isolation: isolate;
+}
+
 .workspace-editor {
   display: flex;
   flex-direction: column;
   min-height: 0;
   background: var(--surface);
   border: 1px solid var(--workspace-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
   box-shadow: var(--workspace-shadow);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -789,6 +794,7 @@ kbd {
 .crop-box-circle {
   border-radius: 50%;
   border: 2px solid #fff;
+  overflow: visible;
 }
 
 .crop-box-circle .crop-handle {
@@ -813,6 +819,8 @@ kbd {
   position: absolute;
   border: 2px solid #fff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
   cursor: move;
   pointer-events: auto;
 }
@@ -863,7 +871,7 @@ kbd {
   position: absolute;
   background: #fff;
   border: 2px solid var(--accent);
-  border-radius: 2px;
+  border-radius: 50%;
   pointer-events: auto;
   z-index: 2;
 }
@@ -975,12 +983,10 @@ kbd {
 .controls {
   background: var(--surface);
   border: 1px solid var(--workspace-border);
-  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
   box-shadow: var(--workspace-shadow);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
